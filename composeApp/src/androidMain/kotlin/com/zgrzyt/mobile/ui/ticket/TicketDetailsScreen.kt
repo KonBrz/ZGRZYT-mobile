@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import com.zgrzyt.mobile.data.model.Message
 import com.zgrzyt.mobile.data.model.SendMessageRequest
 import kotlinx.coroutines.launch
+import com.zgrzyt.mobile.data.repository.TicketRepository
 
 @Composable
 fun TicketDetailsScreen(
@@ -26,16 +27,13 @@ fun TicketDetailsScreen(
 
     val scope = rememberCoroutineScope()
 
+    val repository = remember { TicketRepository() }
+
     LaunchedEffect(ticketId) {
         try {
-            ticket = RetrofitClient.api.getTicket(
-                token = SessionManager.token ?: "",
-                id = ticketId
-            )
-            messages = RetrofitClient.api.getMessages(
-                token = SessionManager.token ?: "",
-                id = ticketId
-            )
+            ticket = repository.getTicket(ticketId)
+
+            messages = repository.getMessages(ticketId)
         } catch (e: Exception) {
             error = e.message ?: "Błąd pobierania zgłoszenia"
         }
@@ -122,16 +120,12 @@ fun TicketDetailsScreen(
 
                             try {
 
-                                RetrofitClient.api.sendMessage(
-                                    token = SessionManager.token ?: "",
-                                    id = ticketId,
-                                    request = SendMessageRequest(textToSend)
+                                repository.sendMessage(
+                                    ticketId = ticketId,
+                                    body = textToSend
                                 )
 
-                                messages = RetrofitClient.api.getMessages(
-                                    token = SessionManager.token ?: "",
-                                    id = ticketId
-                                )
+                                messages = repository.getMessages(ticketId)
 
                             } catch (e: Exception) {
 

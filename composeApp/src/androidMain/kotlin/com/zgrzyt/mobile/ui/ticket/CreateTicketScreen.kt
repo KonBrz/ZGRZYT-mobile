@@ -9,6 +9,7 @@ import com.zgrzyt.mobile.data.api.RetrofitClient
 import com.zgrzyt.mobile.data.model.CreateTicketRequest
 import com.zgrzyt.mobile.data.repository.SessionManager
 import kotlinx.coroutines.launch
+import com.zgrzyt.mobile.data.repository.TicketRepository
 
 @Composable
 fun CreateTicketScreen(
@@ -21,6 +22,8 @@ fun CreateTicketScreen(
     var result by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
+
+    val repository = remember { TicketRepository() }
 
     Column(
         modifier = Modifier
@@ -90,13 +93,10 @@ fun CreateTicketScreen(
                     }
 
                     try {
-                        RetrofitClient.api.createTicket(
-                            token = SessionManager.token ?: "",
-                            request = CreateTicketRequest(
-                                title = title,
-                                description = description,
-                                priority = priority
-                            )
+                        repository.createTicket(
+                            title = title,
+                            description = description,
+                            priority = priority
                         )
 
                         onCreated()

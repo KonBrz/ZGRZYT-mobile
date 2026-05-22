@@ -12,6 +12,7 @@ import com.zgrzyt.mobile.data.model.Ticket
 import com.zgrzyt.mobile.data.repository.SessionManager
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
+import com.zgrzyt.mobile.data.repository.TicketRepository
 
 @Composable
 fun TicketsScreen() {
@@ -24,6 +25,8 @@ fun TicketsScreen() {
 
     val scope = rememberCoroutineScope()
 
+    val repository = remember { TicketRepository() }
+
     if (showCreateScreen) {
         CreateTicketScreen(
             onBack = {
@@ -34,9 +37,7 @@ fun TicketsScreen() {
                 selectedTicketId = null
 
                 scope.launch {
-                    val response = RetrofitClient.api.getTickets(
-                        SessionManager.token ?: ""
-                    )
+                    val response = repository.getTickets()
                     tickets = response.data
                 }
             }
@@ -60,10 +61,7 @@ fun TicketsScreen() {
 
             try {
 
-                val response = RetrofitClient.api.getTickets(
-                    SessionManager.token ?: ""
-                )
-
+                val response = repository.getTickets()
                 tickets = response.data
 
             } catch (e: Exception) {
