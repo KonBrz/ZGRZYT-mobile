@@ -9,14 +9,24 @@ import androidx.compose.ui.unit.dp
 import com.zgrzyt.mobile.data.api.RetrofitClient
 import com.zgrzyt.mobile.data.model.LoginRequest
 import kotlinx.coroutines.launch
+import com.zgrzyt.mobile.data.repository.SessionManager
+import com.zgrzyt.mobile.ui.tickets.TicketsScreen
+
+
 
 @Composable
 fun LoginScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
+    var loggedIn by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+
+    if (loggedIn) {
+        TicketsScreen()
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -57,6 +67,12 @@ fun LoginScreen() {
                         val response = RetrofitClient.api.login(
                             LoginRequest(email, password)
                         )
+
+                        SessionManager.saveSession(
+                            accessToken = response.access_token,
+                            userRole = response.role
+                        )
+                        loggedIn = true
 
                         result = "Zalogowano jako: ${response.role}"
                     } catch (e: Exception) {
