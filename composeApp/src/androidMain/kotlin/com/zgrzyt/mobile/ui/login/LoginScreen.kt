@@ -15,18 +15,15 @@ import com.zgrzyt.mobile.ui.tickets.TicketsScreen
 
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
-    var loggedIn by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
-    if (loggedIn) {
-        TicketsScreen()
-        return
-    }
 
     Column(
         modifier = Modifier
@@ -72,7 +69,7 @@ fun LoginScreen() {
                             accessToken = response.access_token,
                             userRole = response.role
                         )
-                        loggedIn = true
+                        onLoginSuccess()
 
                         result = "Zalogowano jako: ${response.role}"
                     } catch (e: Exception) {

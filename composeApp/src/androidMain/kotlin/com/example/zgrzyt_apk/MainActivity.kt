@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.zgrzyt.mobile.ui.login.LoginScreen
+import com.zgrzyt.mobile.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,13 +15,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-           LoginScreen()
+           AppNavigation()
         }
     }
 }
 
 @Preview
 @Composable
-fun AppAndroidPreview() {
-    LoginScreen()
+   fun AppAndroidPreview() {
+    AppNavigation()
 }

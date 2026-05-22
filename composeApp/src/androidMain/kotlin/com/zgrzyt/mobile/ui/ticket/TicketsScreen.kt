@@ -13,62 +13,26 @@ import com.zgrzyt.mobile.data.repository.SessionManager
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import com.zgrzyt.mobile.data.repository.TicketRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
-fun TicketsScreen() {
+fun TicketsScreen(
+    onTicketClick: (Int) -> Unit,
+    onCreateClick: () -> Unit
+) {
 
-    var tickets by remember { mutableStateOf<List<Ticket>>(emptyList()) }
-    var error by remember { mutableStateOf("") }
+    val viewModel: TicketsViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    var selectedTicketId by remember { mutableStateOf<Int?>(null) }
-    var showCreateScreen by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
     val repository = remember { TicketRepository() }
 
-    if (showCreateScreen) {
-        CreateTicketScreen(
-            onBack = {
-                showCreateScreen = false
-            },
-            onCreated = {
-                showCreateScreen = false
-                selectedTicketId = null
-
-                scope.launch {
-                    val response = repository.getTickets()
-                    tickets = response.data
-                }
-            }
-        )
-        return
-    }
-
-    if (selectedTicketId != null) {
-        TicketDetailsScreen(
-            ticketId = selectedTicketId!!,
-            onBack = {
-                selectedTicketId = null
-            }
-        )
-        return
-    }
 
     LaunchedEffect(Unit) {
-
-        scope.launch {
-
-            try {
-
-                val response = repository.getTickets()
-                tickets = response.data
-
-            } catch (e: Exception) {
-
-                error = e.message ?: "Błąd"
-            }
-        }
+        viewModel.loadTickets()
     }
 
     Column(
@@ -85,32 +49,29 @@ fun TicketsScreen() {
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                selectedTicketId = null
-                showCreateScreen = true
-            }
+            onClick = onCreateClick
         ) {
             Text("Nowe zgłoszenie")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (error.isNotEmpty()) {
-
-            Text(error)
-
+        if (uiState.isLoading) {
+            CircularProgressIndicator()
+        } else if (uiState.error.isNotEmpty()) {
+            Text(uiState.error)
         } else {
 
             LazyColumn {
 
-                items(tickets) { ticket ->
+                items(uiState.tickets) { ticket ->
 
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp)
                             .clickable {
-                                selectedTicketId = ticket.id
+                                onTicketClick(ticket.id)
                             }
                     ) {
 
