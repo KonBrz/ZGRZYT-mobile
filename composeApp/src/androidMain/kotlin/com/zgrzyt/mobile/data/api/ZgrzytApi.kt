@@ -9,6 +9,8 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import com.zgrzyt.mobile.data.model.Ticket
 import retrofit2.http.Path
+import com.zgrzyt.mobile.data.model.Message
+import com.zgrzyt.mobile.data.model.SendMessageRequest
 
 interface ZgrzytApi {
 
@@ -26,4 +28,17 @@ interface ZgrzytApi {
         @Header("Authorization") token: String,
         @Path("id") id: Int
     ): Ticket
+
+    @GET("api/tickets/{id}/messages")
+    suspend fun getMessages(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): List<Message>
+
+    @POST("api/tickets/{id}/messages")
+    suspend fun sendMessage(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: SendMessageRequest
+    ): Message
 }
