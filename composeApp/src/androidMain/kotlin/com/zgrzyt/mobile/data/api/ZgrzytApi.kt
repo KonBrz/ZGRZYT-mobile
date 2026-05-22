@@ -7,6 +7,8 @@ import retrofit2.http.POST
 import com.zgrzyt.mobile.data.model.TicketResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
+import com.zgrzyt.mobile.data.model.Ticket
+import retrofit2.http.Path
 
 interface ZgrzytApi {
 
@@ -18,4 +20,10 @@ interface ZgrzytApi {
     suspend fun getTickets(
         @Header("Authorization") token: String
     ): TicketResponse
+
+    @GET("api/tickets/{id}")
+    suspend fun getTicket(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int
+    ): Ticket
 }

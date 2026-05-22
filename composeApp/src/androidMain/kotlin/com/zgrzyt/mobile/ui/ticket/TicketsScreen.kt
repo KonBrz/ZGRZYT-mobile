@@ -11,6 +11,7 @@ import com.zgrzyt.mobile.data.api.RetrofitClient
 import com.zgrzyt.mobile.data.model.Ticket
 import com.zgrzyt.mobile.data.repository.SessionManager
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.clickable
 
 @Composable
 fun TicketsScreen() {
@@ -24,6 +25,22 @@ fun TicketsScreen() {
     }
 
     val scope = rememberCoroutineScope()
+
+    var selectedTicketId by remember {
+        mutableStateOf<Int?>(null)
+    }
+
+    if (selectedTicketId != null) {
+
+        TicketDetailsScreen(
+            ticketId = selectedTicketId!!,
+            onBack = {
+                selectedTicketId = null
+            }
+        )
+
+        return
+    }
 
     LaunchedEffect(Unit) {
 
@@ -71,6 +88,9 @@ fun TicketsScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp)
+                            .clickable {
+                                selectedTicketId = ticket.id
+                            }
                     ) {
 
                         Column(
