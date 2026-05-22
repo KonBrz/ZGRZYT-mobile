@@ -11,6 +11,7 @@ import com.zgrzyt.mobile.data.model.Ticket
 import retrofit2.http.Path
 import com.zgrzyt.mobile.data.model.Message
 import com.zgrzyt.mobile.data.model.SendMessageRequest
+import com.zgrzyt.mobile.data.model.CreateTicketRequest
 
 interface ZgrzytApi {
 
@@ -18,6 +19,12 @@ interface ZgrzytApi {
     suspend fun login(
         @Body request: LoginRequest
     ): AuthResponse
+
+    @POST("api/tickets")
+    suspend fun createTicket(
+        @Header("Authorization") token: String,
+        @Body request: CreateTicketRequest
+    ): Ticket
     @GET("api/tickets")
     suspend fun getTickets(
         @Header("Authorization") token: String

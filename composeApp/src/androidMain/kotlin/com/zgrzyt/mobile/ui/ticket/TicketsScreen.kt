@@ -16,29 +16,41 @@ import androidx.compose.foundation.clickable
 @Composable
 fun TicketsScreen() {
 
-    var tickets by remember {
-        mutableStateOf<List<Ticket>>(emptyList())
-    }
+    var tickets by remember { mutableStateOf<List<Ticket>>(emptyList()) }
+    var error by remember { mutableStateOf("") }
 
-    var error by remember {
-        mutableStateOf("")
-    }
+    var selectedTicketId by remember { mutableStateOf<Int?>(null) }
+    var showCreateScreen by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
-    var selectedTicketId by remember {
-        mutableStateOf<Int?>(null)
+    if (showCreateScreen) {
+        CreateTicketScreen(
+            onBack = {
+                showCreateScreen = false
+            },
+            onCreated = {
+                showCreateScreen = false
+                selectedTicketId = null
+
+                scope.launch {
+                    val response = RetrofitClient.api.getTickets(
+                        SessionManager.token ?: ""
+                    )
+                    tickets = response.data
+                }
+            }
+        )
+        return
     }
 
     if (selectedTicketId != null) {
-
         TicketDetailsScreen(
             ticketId = selectedTicketId!!,
             onBack = {
                 selectedTicketId = null
             }
         )
-
         return
     }
 
@@ -71,6 +83,17 @@ fun TicketsScreen() {
             text = "Zgłoszenia",
             style = MaterialTheme.typography.headlineMedium
         )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                selectedTicketId = null
+                showCreateScreen = true
+            }
+        ) {
+            Text("Nowe zgłoszenie")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
