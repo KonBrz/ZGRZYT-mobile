@@ -29,6 +29,10 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation("com.squareup.retrofit2:retrofit:2.11.0")
+            implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+            implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+            implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -65,5 +69,8 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
 
