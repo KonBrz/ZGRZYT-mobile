@@ -5,25 +5,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.zgrzyt.mobile.data.api.RetrofitClient
-import com.zgrzyt.mobile.data.model.CreateTicketRequest
-import com.zgrzyt.mobile.data.repository.SessionManager
-import kotlinx.coroutines.launch
-import com.zgrzyt.mobile.data.repository.TicketRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CreateTicketScreen(
     onBack: () -> Unit,
     onCreated: () -> Unit
 ) {
+    val viewModel: CreateTicketViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var priority by remember { mutableStateOf("średni") }
-    var result by remember { mutableStateOf("") }
 
-    val scope = rememberCoroutineScope()
-
-    val repository = remember { TicketRepository() }
+    LaunchedEffect(uiState.isCreated) {
+        if (uiState.isCreated) {
+            onCreated()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -85,32 +85,24 @@ fun CreateTicketScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isLoading,
             onClick = {
-                scope.launch {
-                    if (title.isBlank() || description.isBlank()) {
-                        result = "Uzupełnij tytuł i opis"
-                        return@launch
-                    }
-
-                    try {
-                        repository.createTicket(
-                            title = title,
-                            description = description,
-                            priority = priority
-                        )
-
-                        onCreated()
-                    } catch (e: Exception) {
-                        result = "Błąd tworzenia zgłoszenia: ${e.message}"
-                    }
-                }
+                viewModel.createTicket(
+                    title = title,
+                    description = description,
+                    priority = priority
+                )
             }
         ) {
-            Text("Utwórz zgłoszenie")
+            Text(
+                if (uiState.isLoading) "Tworzenie..." else "Utwórz zgłoszenie"
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(result)
+        if (uiState.error.isNotEmpty()) {
+            Text(uiState.error)
+        }
     }
 }
