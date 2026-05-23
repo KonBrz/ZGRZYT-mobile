@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.zgrzyt.mobile.data.repository.ApiErrorHandler
 
 data class TicketsUiState(
     val tickets: List<Ticket> = emptyList(),
@@ -39,8 +40,7 @@ class TicketsViewModel : ViewModel() {
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Błąd pobierania zgłoszeń"
-                )
+                    error = ApiErrorHandler.getMessage(e)                )
             }
         }
     }
