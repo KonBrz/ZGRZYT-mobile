@@ -8,23 +8,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zgrzyt.mobile.data.repository.SessionManager
 import kotlinx.coroutines.delay
 
 @Composable
 fun TicketDetailsScreen(
-    ticketId: Int,
+    ticketId: Int
 ) {
     val viewModel: TicketDetailsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     var newMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-
+    LaunchedEffect(ticketId) {
         while (true) {
-
             viewModel.loadTicket(ticketId)
-
             delay(5000)
         }
     }
@@ -36,14 +34,12 @@ fun TicketDetailsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
-
-        if (uiState.isLoading) {
+        if (uiState.isLoading && ticket == null) {
             CircularProgressIndicator()
             return@Column
         }
 
-        if (uiState.error.isNotEmpty()) {
+        if (uiState.error.isNotEmpty() && ticket == null) {
             Text(uiState.error)
             return@Column
         }
@@ -58,11 +54,11 @@ fun TicketDetailsScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(ticket.description)
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Status: ${ticket.status}",
@@ -73,30 +69,6 @@ fun TicketDetailsScreen(
                 else -> androidx.compose.ui.graphics.Color.Gray
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (
-            com.zgrzyt.mobile.data.repository.SessionManager.role == "admin" ||
-            com.zgrzyt.mobile.data.repository.SessionManager.role == "it"
-        ) {
-            Text("Zmień priorytet")
-
-            Row {
-                listOf("niski", "średni", "wysoki").forEach { priority ->
-                    Button(
-                        modifier = Modifier.padding(end = 8.dp),
-                        onClick = {
-                            viewModel.updatePriority(
-                                ticketId = ticketId,
-                                priority = priority
-                            )
-                        }
-                    ) {
-                        Text(priority)
-                    }
-                }
-            }
-        }
 
         Text(
             text = "Priorytet: ${ticket.priority}",
@@ -107,20 +79,24 @@ fun TicketDetailsScreen(
                 else -> androidx.compose.ui.graphics.Color.Gray
             }
         )
+
         Text("Utworzono: ${ticket.created_at}")
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         if (
-            com.zgrzyt.mobile.data.repository.SessionManager.role == "admin" ||
-            com.zgrzyt.mobile.data.repository.SessionManager.role == "it"
+            SessionManager.role == "admin" ||
+            SessionManager.role == "it"
         ) {
             Text("Zmień status")
 
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 listOf("nowe", "w trakcie", "zamknięte").forEach { status ->
                     Button(
-                        modifier = Modifier.padding(end = 8.dp),
+                        modifier = Modifier.weight(1f),
                         onClick = {
                             viewModel.updateStatus(
                                 ticketId = ticketId,
@@ -132,16 +108,39 @@ fun TicketDetailsScreen(
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text("Zmień priorytet")
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf("niski", "średni", "wysoki").forEach { priority ->
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.updatePriority(
+                                ticketId = ticketId,
+                                priority = priority
+                            )
+                        }
+                    ) {
+                        Text(priority)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
 
         Text(
             text = "Wiadomości",
             style = MaterialTheme.typography.titleLarge
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn(
             modifier = Modifier.weight(1f)
@@ -152,48 +151,62 @@ fun TicketDetailsScreen(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
                 ) {
-                    Text(
-                        text =
-                            message.body
-                                ?: message.message
-                                ?: message.content
-                                ?: message.text
-                                ?: "Brak treści",
+                    Column(
                         modifier = Modifier.padding(12.dp)
-                    )
+                    ) {
+                        Text(
+                            text =
+                                "${message.user_name ?: "Użytkownik"} " +
+                                        "(${message.user_role ?: "user"})",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text =
+                                message.body
+                                    ?: message.message
+                                    ?: message.content
+                                    ?: message.text
+                                    ?: "Brak treści"
+                        )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = newMessage,
-            onValueChange = { newMessage = it },
-            label = { Text("Napisz wiadomość") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isSending,
-            onClick = {
-                if (newMessage.isNotBlank()) {
-                    val textToSend = newMessage
-                    newMessage = ""
-
-                    viewModel.sendMessage(
-                        ticketId = ticketId,
-                        body = textToSend
-                    )
-                }
-            }
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                if (uiState.isSending) "Wysyłanie..." else "Wyślij"
+            OutlinedTextField(
+                value = newMessage,
+                onValueChange = { newMessage = it },
+                label = { Text("Napisz wiadomość") },
+                modifier = Modifier.weight(1f)
             )
+
+            Button(
+                enabled = !uiState.isSending,
+                onClick = {
+                    if (newMessage.isNotBlank()) {
+                        val textToSend = newMessage
+                        newMessage = ""
+
+                        viewModel.sendMessage(
+                            ticketId = ticketId,
+                            body = textToSend
+                        )
+                    }
+                }
+            ) {
+                Text(
+                    if (uiState.isSending) "..." else "Wyślij"
+                )
+            }
         }
     }
 }

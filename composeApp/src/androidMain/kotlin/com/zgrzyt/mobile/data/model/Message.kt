@@ -8,5 +8,7 @@ data class Message(
     val text: String?,
     val user_id: Int?,
     val ticket_id: Int?,
-    val created_at: String?
+    val created_at: String?,
+    val user_name: String?,
+    val user_role: String?
 )
