@@ -66,6 +66,31 @@ fun TicketDetailsScreen(
         Text("Priorytet: ${ticket.priority}")
         Text("Utworzono: ${ticket.created_at}")
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (
+            com.zgrzyt.mobile.data.repository.SessionManager.role == "admin" ||
+            com.zgrzyt.mobile.data.repository.SessionManager.role == "it"
+        ) {
+            Text("Zmień status")
+
+            Row {
+                listOf("nowe", "w trakcie", "zamknięte").forEach { status ->
+                    Button(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = {
+                            viewModel.updateStatus(
+                                ticketId = ticketId,
+                                status = status
+                            )
+                        }
+                    ) {
+                        Text(status)
+                    }
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(

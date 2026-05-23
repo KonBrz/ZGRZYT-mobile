@@ -4,6 +4,7 @@ import com.zgrzyt.mobile.data.api.RetrofitClient
 import com.zgrzyt.mobile.data.model.CreateTicketRequest
 import com.zgrzyt.mobile.data.model.SendMessageRequest
 import com.zgrzyt.mobile.data.model.TicketResponse
+import com.zgrzyt.mobile.data.model.UpdateTicketRequest
 
 class TicketRepository {
 
@@ -21,6 +22,17 @@ class TicketRepository {
                 data = TicketCache.getTickets()
             )
         }
+    suspend fun updateTicketStatus(
+        ticketId: Int,
+        status: String
+    ) =
+        RetrofitClient.api.updateTicket(
+            token = SessionManager.token ?: "",
+            id = ticketId,
+            request = UpdateTicketRequest(
+                status = status
+            )
+        )
 
     suspend fun getTicket(id: Int) =
         RetrofitClient.api.getTicket(

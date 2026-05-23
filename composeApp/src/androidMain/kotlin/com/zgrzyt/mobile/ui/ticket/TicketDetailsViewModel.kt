@@ -60,6 +60,26 @@ class TicketDetailsViewModel : ViewModel() {
             }
         }
     }
+    fun updateStatus(
+        ticketId: Int,
+        status: String
+    ) {
+        viewModelScope.launch {
+            try {
+                repository.updateTicketStatus(
+                    ticketId = ticketId,
+                    status = status
+                )
+
+                loadTicket(ticketId)
+
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message ?: "Błąd zmiany statusu"
+                )
+            }
+        }
+    }
 
     fun sendMessage(
         ticketId: Int,

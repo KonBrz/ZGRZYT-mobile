@@ -12,6 +12,8 @@ import retrofit2.http.Path
 import com.zgrzyt.mobile.data.model.Message
 import com.zgrzyt.mobile.data.model.SendMessageRequest
 import com.zgrzyt.mobile.data.model.CreateTicketRequest
+import com.zgrzyt.mobile.data.model.UpdateTicketRequest
+import retrofit2.http.PUT
 
 interface ZgrzytApi {
 
@@ -48,4 +50,11 @@ interface ZgrzytApi {
         @Path("id") id: Int,
         @Body request: SendMessageRequest
     ): retrofit2.Response<Unit>
+
+    @PUT("api/tickets/{id}")
+    suspend fun updateTicket(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body request: UpdateTicketRequest
+    ): Ticket
 }
