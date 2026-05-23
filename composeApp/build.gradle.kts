@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+//    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -33,6 +34,7 @@ kotlin {
             implementation("com.squareup.retrofit2:converter-gson:2.11.0")
             implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
             implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -69,9 +71,15 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.navigation:navigation-compose:2.8.4")
+
+//    implementation("androidx.room:room-runtime:2.6.1")
+//    implementation("androidx.room:room-ktx:2.6.1")
+//
+//    ksp("androidx.room:room-compiler:2.6.1")
 }
 

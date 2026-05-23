@@ -3,13 +3,24 @@ package com.zgrzyt.mobile.data.repository
 import com.zgrzyt.mobile.data.api.RetrofitClient
 import com.zgrzyt.mobile.data.model.CreateTicketRequest
 import com.zgrzyt.mobile.data.model.SendMessageRequest
+import com.zgrzyt.mobile.data.model.TicketResponse
 
 class TicketRepository {
 
-    suspend fun getTickets() =
-        RetrofitClient.api.getTickets(
-            token = SessionManager.token ?: ""
-        )
+    suspend fun getTickets(): TicketResponse =
+        try {
+            val response = RetrofitClient.api.getTickets(
+                token = SessionManager.token ?: ""
+            )
+
+            TicketCache.saveTickets(response.data)
+
+            response
+        } catch (e: Exception) {
+            TicketResponse(
+                data = TicketCache.getTickets()
+            )
+        }
 
     suspend fun getTicket(id: Int) =
         RetrofitClient.api.getTicket(
