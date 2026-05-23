@@ -20,6 +20,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -59,8 +61,18 @@ android {
         }
     }
     buildTypes {
+
         getByName("release") {
-            isMinifyEnabled = false
+
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            proguardFiles(
+                getDefaultProguardFile(
+                    "proguard-android-optimize.txt"
+                ),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
