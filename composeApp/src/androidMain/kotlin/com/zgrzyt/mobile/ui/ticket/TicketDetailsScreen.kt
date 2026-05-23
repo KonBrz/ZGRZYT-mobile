@@ -62,8 +62,25 @@ fun TicketDetailsScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text("Status: ${ticket.status}")
-        Text("Priorytet: ${ticket.priority}")
+        Text(
+            text = "Status: ${ticket.status}",
+            color = when (ticket.status) {
+                "nowe" -> androidx.compose.ui.graphics.Color.Blue
+                "w trakcie" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
+                "zamknięte" -> androidx.compose.ui.graphics.Color.Green
+                else -> androidx.compose.ui.graphics.Color.Gray
+            }
+        )
+
+        Text(
+            text = "Priorytet: ${ticket.priority}",
+            color = when (ticket.priority) {
+                "niski" -> androidx.compose.ui.graphics.Color.Green
+                "średni" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
+                "wysoki" -> androidx.compose.ui.graphics.Color.Red
+                else -> androidx.compose.ui.graphics.Color.Gray
+            }
+        )
         Text("Utworzono: ${ticket.created_at}")
 
         Spacer(modifier = Modifier.height(16.dp))
