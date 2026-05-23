@@ -90,61 +90,69 @@ fun TicketsScreen(
         } else if (uiState.error.isNotEmpty()) {
             Text(uiState.error)
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(filteredTickets) { ticket ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                            .clickable {
-                                onTicketClick(ticket.id)
-                            },
-                        colors = CardDefaults.cardColors(
-                            containerColor = when (ticket.status) {
-                                "nowe" -> androidx.compose.ui.graphics.Color(0xFFE3F2FD)
-                                "w trakcie" -> androidx.compose.ui.graphics.Color(0xFFFFF3E0)
-                                "zamknięte" -> androidx.compose.ui.graphics.Color(0xFFE8F5E9)
-                                else -> MaterialTheme.colorScheme.surface
-                            }
-                        )
-                    ) {
-                        Column(
+            if (filteredTickets.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text("Brak zgłoszeń do wyświetlenia")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(filteredTickets) { ticket ->
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 16.dp)
+                                .padding(bottom = 12.dp)
+                                .clickable {
+                                    onTicketClick(ticket.id)
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = when (ticket.status) {
+                                    "nowe" -> androidx.compose.ui.graphics.Color(0xFFE3F2FD)
+                                    "w trakcie" -> androidx.compose.ui.graphics.Color(0xFFFFF3E0)
+                                    "zamknięte" -> androidx.compose.ui.graphics.Color(0xFFE8F5E9)
+                                    else -> MaterialTheme.colorScheme.surface
+                                }
+                            )
                         ) {
-                            Text(
-                                text = ticket.title,
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                            ) {
+                                Text(
+                                    text = ticket.title,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(ticket.description)
+                                Text(ticket.description)
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
-                                text = "Status: ${ticket.status}",
-                                color = when (ticket.status) {
-                                    "nowe" -> androidx.compose.ui.graphics.Color.Blue
-                                    "w trakcie" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
-                                    "zamknięte" -> androidx.compose.ui.graphics.Color.Green
-                                    else -> androidx.compose.ui.graphics.Color.Gray
-                                }
-                            )
+                                Text(
+                                    text = "Status: ${ticket.status}",
+                                    color = when (ticket.status) {
+                                        "nowe" -> androidx.compose.ui.graphics.Color.Blue
+                                        "w trakcie" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
+                                        "zamknięte" -> androidx.compose.ui.graphics.Color.Green
+                                        else -> androidx.compose.ui.graphics.Color.Gray
+                                    }
+                                )
 
-                            Text(
-                                text = "Priorytet: ${ticket.priority}",
-                                color = when (ticket.priority) {
-                                    "niski" -> androidx.compose.ui.graphics.Color.Green
-                                    "średni" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
-                                    "wysoki" -> androidx.compose.ui.graphics.Color.Red
-                                    else -> androidx.compose.ui.graphics.Color.Gray
-                                }
-                            )
+                                Text(
+                                    text = "Priorytet: ${ticket.priority}",
+                                    color = when (ticket.priority) {
+                                        "niski" -> androidx.compose.ui.graphics.Color.Green
+                                        "średni" -> androidx.compose.ui.graphics.Color(0xFFFF9800)
+                                        "wysoki" -> androidx.compose.ui.graphics.Color.Red
+                                        else -> androidx.compose.ui.graphics.Color.Gray
+                                    }
+                                )
+                            }
                         }
                     }
                 }
