@@ -8,19 +8,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun TicketDetailsScreen(
     ticketId: Int,
-    onBack: () -> Unit
 ) {
     val viewModel: TicketDetailsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     var newMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(ticketId) {
-        viewModel.loadTicket(ticketId)
+    LaunchedEffect(Unit) {
+
+        while (true) {
+
+            viewModel.loadTicket(ticketId)
+
+            delay(5000)
+        }
     }
 
     val ticket = uiState.ticket
@@ -30,11 +36,7 @@ fun TicketDetailsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Button(onClick = onBack) {
-            Text("Wróć")
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         if (uiState.isLoading) {
             CircularProgressIndicator()
@@ -71,6 +73,30 @@ fun TicketDetailsScreen(
                 else -> androidx.compose.ui.graphics.Color.Gray
             }
         )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (
+            com.zgrzyt.mobile.data.repository.SessionManager.role == "admin" ||
+            com.zgrzyt.mobile.data.repository.SessionManager.role == "it"
+        ) {
+            Text("Zmień priorytet")
+
+            Row {
+                listOf("niski", "średni", "wysoki").forEach { priority ->
+                    Button(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = {
+                            viewModel.updatePriority(
+                                ticketId = ticketId,
+                                priority = priority
+                            )
+                        }
+                    ) {
+                        Text(priority)
+                    }
+                }
+            }
+        }
 
         Text(
             text = "Priorytet: ${ticket.priority}",

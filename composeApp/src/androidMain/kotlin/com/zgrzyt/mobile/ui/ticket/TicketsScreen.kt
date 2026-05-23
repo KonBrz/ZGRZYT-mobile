@@ -30,6 +30,11 @@ fun TicketsScreen(
     LaunchedEffect(Unit) {
         viewModel.loadTickets()
     }
+    LaunchedEffect(uiState.shouldLogout) {
+        if (uiState.shouldLogout) {
+            onLogout()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -87,9 +92,26 @@ fun TicketsScreen(
 
         if (uiState.isLoading) {
             CircularProgressIndicator()
-        } else if (uiState.error.isNotEmpty()) {
+        }  else if (uiState.error.isNotEmpty()) {
+
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(uiState.error)
-        } else {
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    viewModel.loadTickets()
+                }
+            ) {
+                Text("Spróbuj ponownie")
+            }
+        }
+
+    } else {
             if (filteredTickets.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize()

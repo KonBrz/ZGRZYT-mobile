@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.zgrzyt.mobile.data.repository.ApiErrorHandler
+import retrofit2.HttpException
 
 data class TicketsUiState(
     val tickets: List<Ticket> = emptyList(),
@@ -23,6 +24,13 @@ class TicketsViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(TicketsUiState())
     val uiState: StateFlow<TicketsUiState> = _uiState.asStateFlow()
 
+    val shouldLogout: Boolean = false
+    data class TicketsUiState(
+        val tickets: List<Ticket> = emptyList(),
+        val isLoading: Boolean = false,
+        val error: String = "",
+        val shouldLogout: Boolean = false
+    )
     fun loadTickets() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -38,9 +46,15 @@ class TicketsViewModel : ViewModel() {
                     isLoading = false
                 )
             } catch (e: Exception) {
+
+                val isUnauthorized =
+                    e is HttpException && e.code() == 401
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = ApiErrorHandler.getMessage(e)                )
+                    error = ApiErrorHandler.getMessage(e),
+                    shouldLogout = isUnauthorized
+                )
             }
         }
     }

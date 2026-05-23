@@ -83,9 +83,7 @@ fun AppNavigation() {
 
             TicketDetailsScreen(
                 ticketId = ticketId,
-                onBack = {
-                    navController.popBackStack()
-                }
+
             )
         }
     }

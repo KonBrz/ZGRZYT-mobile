@@ -22,6 +22,18 @@ class TicketRepository {
                 data = TicketCache.getTickets()
             )
         }
+
+    suspend fun updateTicketPriority(
+        ticketId: Int,
+        priority: String
+    ) =
+        RetrofitClient.api.updateTicket(
+            token = SessionManager.token ?: "",
+            id = ticketId,
+            request = UpdateTicketRequest(
+                priority = priority
+            )
+        )
     suspend fun updateTicketStatus(
         ticketId: Int,
         status: String

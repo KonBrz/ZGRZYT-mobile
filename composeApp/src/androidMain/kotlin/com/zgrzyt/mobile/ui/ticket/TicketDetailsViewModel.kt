@@ -116,4 +116,24 @@ class TicketDetailsViewModel : ViewModel() {
             }
         }
     }
+    fun updatePriority(
+        ticketId: Int,
+        priority: String
+    ) {
+        viewModelScope.launch {
+            try {
+                repository.updateTicketPriority(
+                    ticketId = ticketId,
+                    priority = priority
+                )
+
+                loadTicket(ticketId)
+
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = e.message ?: "Błąd zmiany priorytetu"
+                )
+            }
+        }
+    }
 }
