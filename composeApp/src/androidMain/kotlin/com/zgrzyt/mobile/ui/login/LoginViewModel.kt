@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.content.Context
 
 data class LoginUiState(
     val isLoading: Boolean = false,
@@ -23,9 +24,11 @@ class LoginViewModel : ViewModel() {
         _uiState.asStateFlow()
 
     fun login(
+        context: Context,
         login: String,
         password: String
-    ) {
+    )
+    {
 
         if (login.isBlank() || password.isBlank()) {
 
@@ -54,6 +57,7 @@ class LoginViewModel : ViewModel() {
                     )
 
                 SessionManager.saveSession(
+                    context = context,
                     accessToken = response.access_token,
                     userRole = response.role
                 )

@@ -11,14 +11,22 @@ import com.zgrzyt.mobile.ui.tickets.CreateTicketScreen
 import com.zgrzyt.mobile.ui.tickets.TicketDetailsScreen
 import com.zgrzyt.mobile.ui.tickets.TicketsScreen
 import com.zgrzyt.mobile.data.repository.SessionManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
+
 fun AppNavigation() {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        SessionManager.loadSession(context)
+    }
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = if (SessionManager.isLoggedIn()) "tickets" else "login"
     ) {
         composable("login") {
             LoginScreen(
@@ -41,7 +49,7 @@ fun AppNavigation() {
                     navController.navigate("createTicket")
                 },
                 onLogout = {
-                    SessionManager.clearSession()
+                    SessionManager.clearSession(context)
 
                     navController.navigate("login") {
                         popUpTo("tickets") {

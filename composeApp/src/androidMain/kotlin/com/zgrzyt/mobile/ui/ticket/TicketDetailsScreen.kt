@@ -85,7 +85,12 @@ fun TicketDetailsScreen(
                         .padding(bottom = 8.dp)
                 ) {
                     Text(
-                        text = message.body,
+                        text =
+                            message.body
+                                ?: message.message
+                                ?: message.content
+                                ?: message.text
+                                ?: "Brak treści",
                         modifier = Modifier.padding(12.dp)
                     )
                 }

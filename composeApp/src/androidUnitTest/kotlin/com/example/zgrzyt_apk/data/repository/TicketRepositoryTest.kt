@@ -16,7 +16,7 @@ class TicketRepositoryTest {
 
     @Test
     fun ticketRepository_shouldUseSessionManagerToken() {
-        SessionManager.saveSession(
+        SessionManager.saveSessionInMemory(
             accessToken = "test-token",
             userRole = "user"
         )

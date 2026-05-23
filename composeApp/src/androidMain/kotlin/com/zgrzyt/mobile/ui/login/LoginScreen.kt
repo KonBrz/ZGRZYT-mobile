@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun LoginScreen(
@@ -15,6 +16,7 @@ fun LoginScreen(
 
     val viewModel: LoginViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     var login by remember {
         mutableStateOf("")
@@ -79,6 +81,7 @@ fun LoginScreen(
             onClick = {
 
                 viewModel.login(
+                    context = context,
                     login = login,
                     password = password
                 )

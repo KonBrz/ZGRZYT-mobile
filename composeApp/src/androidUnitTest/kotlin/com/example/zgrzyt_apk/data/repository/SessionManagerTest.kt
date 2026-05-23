@@ -9,7 +9,7 @@ class SessionManagerTest {
 
     @Test
     fun saveSession_shouldSaveBearerTokenAndRole() {
-        SessionManager.saveSession(
+        SessionManager.saveSessionInMemory(
             accessToken = "abc123",
             userRole = "admin"
         )
@@ -20,12 +20,12 @@ class SessionManagerTest {
 
     @Test
     fun clearSession_shouldClearTokenAndRole() {
-        SessionManager.saveSession(
+        SessionManager.saveSessionInMemory(
             accessToken = "abc123",
             userRole = "admin"
         )
 
-        SessionManager.clearSession()
+        SessionManager.clearSessionInMemory()
 
         assertNull(SessionManager.token)
         assertNull(SessionManager.role)

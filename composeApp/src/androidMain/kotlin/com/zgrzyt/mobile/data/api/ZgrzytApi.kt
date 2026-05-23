@@ -47,5 +47,5 @@ interface ZgrzytApi {
         @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: SendMessageRequest
-    ): Message
+    ): retrofit2.Response<Unit>
 }
