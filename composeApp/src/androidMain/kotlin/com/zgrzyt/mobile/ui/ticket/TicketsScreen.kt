@@ -19,8 +19,10 @@ import androidx.compose.runtime.collectAsState
 @Composable
 fun TicketsScreen(
     onTicketClick: (Int) -> Unit,
-    onCreateClick: () -> Unit
-) {
+    onCreateClick: () -> Unit,
+    onLogout: () -> Unit
+)
+{
 
     val viewModel: TicketsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -52,6 +54,15 @@ fun TicketsScreen(
             onClick = onCreateClick
         ) {
             Text("Nowe zgłoszenie")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onLogout
+        ) {
+            Text("Wyloguj")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

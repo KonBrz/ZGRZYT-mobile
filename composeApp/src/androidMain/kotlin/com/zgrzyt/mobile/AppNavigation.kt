@@ -10,6 +10,7 @@ import com.zgrzyt.mobile.ui.login.LoginScreen
 import com.zgrzyt.mobile.ui.tickets.CreateTicketScreen
 import com.zgrzyt.mobile.ui.tickets.TicketDetailsScreen
 import com.zgrzyt.mobile.ui.tickets.TicketsScreen
+import com.zgrzyt.mobile.data.repository.SessionManager
 
 @Composable
 fun AppNavigation() {
@@ -38,6 +39,15 @@ fun AppNavigation() {
                 },
                 onCreateClick = {
                     navController.navigate("createTicket")
+                },
+                onLogout = {
+                    SessionManager.clearSession()
+
+                    navController.navigate("login") {
+                        popUpTo("tickets") {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
