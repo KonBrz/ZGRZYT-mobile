@@ -6,24 +6,30 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.zgrzyt.mobile.data.api.RetrofitClient
-import com.zgrzyt.mobile.data.model.LoginRequest
-import kotlinx.coroutines.launch
-import com.zgrzyt.mobile.data.repository.SessionManager
-import com.zgrzyt.mobile.ui.tickets.TicketsScreen
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf("") }
 
-    val scope = rememberCoroutineScope()
+    val viewModel: LoginViewModel = viewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
+    var login by remember {
+        mutableStateOf("")
+    }
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(uiState.isLoggedIn) {
+
+        if (uiState.isLoggedIn) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -31,14 +37,22 @@ fun LoginScreen(
             .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("ZGRZYT", style = MaterialTheme.typography.headlineLarge)
+
+        Text(
+            "ZGRZYT",
+            style = MaterialTheme.typography.headlineLarge
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Login") },
+            value = login,
+            onValueChange = {
+                login = it
+            },
+            label = {
+                Text("Login")
+            },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -46,9 +60,14 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
-            label = { Text("Hasło") },
-            visualTransformation = PasswordVisualTransformation(),
+            onValueChange = {
+                password = it
+            },
+            label = {
+                Text("Hasło")
+            },
+            visualTransformation =
+                PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -56,33 +75,29 @@ fun LoginScreen(
 
         Button(
             modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isLoading,
             onClick = {
-                scope.launch {
-                    result = "Logowanie..."
 
-                    try {
-                        val response = RetrofitClient.api.login(
-                            LoginRequest(email, password)
-                        )
-
-                        SessionManager.saveSession(
-                            accessToken = response.access_token,
-                            userRole = response.role
-                        )
-                        onLoginSuccess()
-
-                        result = "Zalogowano jako: ${response.role}"
-                    } catch (e: Exception) {
-                        result = "Błąd logowania: ${e.message}"
-                    }
-                }
+                viewModel.login(
+                    login = login,
+                    password = password
+                )
             }
         ) {
-            Text("Zaloguj")
+
+            Text(
+                if (uiState.isLoading)
+                    "Logowanie..."
+                else
+                    "Zaloguj"
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(result)
+        if (uiState.error.isNotEmpty()) {
+
+            Text(uiState.error)
+        }
     }
 }
